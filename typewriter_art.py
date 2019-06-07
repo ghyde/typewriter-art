@@ -40,8 +40,8 @@ def draw_picture(file_path, font=None):
     draw = ImageDraw.Draw(img)
 
     for l in data.split("\n"):
-        # Ignore empty lines
-        if len(l) == 0 or l.starts_with("#"):
+        # Ignore empty lines or comments
+        if len(l) == 0 or l.startswith("#"):
             continue
 
         columns = l.split(" ")
