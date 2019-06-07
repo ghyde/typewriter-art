@@ -17,11 +17,14 @@ def __draw_line(
     text,
     font=None,
     text_color=(0, 0, 0),
-    margin=30,
+    border=30,
     char_height=CHAR_HEIGHT,
 ):
     draw.text(
-        (margin, margin + char_height * line_number), text, fill=text_color, font=font
+        (border, border + char_height * (line_number - 1)),
+        text,
+        fill=text_color,
+        font=font,
     )
 
 
@@ -93,7 +96,12 @@ def __generate_output_file_name(input_file_path, output_extension="png"):
 @click.argument("picture_file", required=1)
 @click.option("-f", "--font", "font_file", default=None, help="Path to PIL font file.")
 @click.option("-o", "--output", "output_file", help="Path to output file.")
-@click.option("-H", "--char-height", default=CHAR_HEIGHT, help="Height of characters.")
+@click.option(
+    "-H", "--char-height", default=CHAR_HEIGHT, help="Pixel height of characters."
+)
+@click.option(
+    "-b", "--border", default=30, help="Size of border (in pixels) around the picture"
+)
 def generate_picture(picture_file, output_file=None, **kwargs):
 
     # Generate an output file name if one isn't provided
