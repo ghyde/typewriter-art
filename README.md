@@ -1,11 +1,15 @@
-Description
------------
+# Typewriter Art
 
-Python program for printing typewriter art.
+## Description
 
-Inspired by "Bob Neill's Book of Typewriter Art".
+A Python program for printing typewriter art.
 
-References
-----------
+## Licenses
 
-Fonts: https://github.com/Tecate/bitmap-fonts
+This project contains multiple licenses. The licenses
+
+- [fonts/Tecate/LICENSE.md](./fonts/Tecate/LICENSE.md)
+- [pictures/Bob_Neill/LICENSE.md](./pictures/Bob_Neill/LICENSE.md)
+
+apply to the files co-located with them. All other files are covered by the
+[Simplified BSD License](./LICENSE) located at the root of this project.
