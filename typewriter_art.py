@@ -6,10 +6,6 @@ import click
 from PIL import Image, ImageFont, ImageDraw
 
 
-BACKGROUND_COLOR = (255, 255, 255)
-TEXT_COLOR = (0, 0, 0)
-SIDE_MARGIN = 30
-TOP_MARGIN = 30
 CHAR_HEIGHT = 8
 CHAR_WIDTH = 4
 IMAGE_DIMENSIONS = (CHAR_WIDTH * 200, CHAR_HEIGHT * 200)
@@ -21,24 +17,21 @@ def __draw_line(
     text,
     font=None,
     text_color=(0, 0, 0),
-    margin=(SIDE_MARGIN, TOP_MARGIN),
+    margin=30,
     char_height=CHAR_HEIGHT,
 ):
     draw.text(
-        (margin[0], margin[1] + char_height * line_number),
-        text,
-        fill=text_color,
-        font=font,
+        (margin, margin + char_height * line_number), text, fill=text_color, font=font
     )
 
 
-def __draw_picture(file_path, font=None):
+def __draw_picture(file_path, font=None, background_color=(255, 255, 255), **kwargs):
     # Get data from picture file
     with open(file_path) as f:
         data = f.read()
 
     # Create image object
-    img = Image.new("RGBA", IMAGE_DIMENSIONS, BACKGROUND_COLOR)
+    img = Image.new("RGBA", IMAGE_DIMENSIONS, background_color)
     draw = ImageDraw.Draw(img)
 
     for l in data.split("\n"):
@@ -70,7 +63,7 @@ def __draw_picture(file_path, font=None):
                 raise SystemExit(error_string)
 
         # Draw text
-        __draw_line(draw, line_number, output, font)
+        __draw_line(draw, line_number, output, font, **kwargs)
 
     return img
 
@@ -98,14 +91,17 @@ def __generate_output_file_name(input_file_path, output_extension="png"):
     help="Path to PIL font file.",
 )
 @click.option("-o", "--output", "output_file", help="Path to output file.")
-def generate_picture(picture_file, font_file, output_file=None):
+@click.option("-H", "--char-height", default=CHAR_HEIGHT, help="Height of characters.")
+def generate_picture(
+    picture_file, font_file, output_file=None, char_height=CHAR_HEIGHT
+):
 
     # Generate an output file name if one isn't provided
     if output_file == None:
         output_file = __generate_output_file_name(picture_file)
 
     font = ImageFont.load_path(font_file)
-    img = __draw_picture(picture_file, font)
+    img = __draw_picture(picture_file, font, char_height=char_height)
     img.save(output_file)
 
 
