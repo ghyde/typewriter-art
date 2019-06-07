@@ -10,7 +10,6 @@ TOP_MARGIN = 30
 CHAR_HEIGHT = 8
 CHAR_WIDTH = 4
 IMAGE_DIMENSIONS = (CHAR_WIDTH * 200, CHAR_HEIGHT * 200)
-DEBUG = True
 
 
 def draw_line(
@@ -48,8 +47,6 @@ def draw_picture(file_path, font=None):
 
         # Grab line number
         line_number = columns[0].replace(")", "")
-        if DEBUG:
-            print(line_number, flush=True)
         if len(line_number) > 1 and line_number[-1].isalpha():
             line_number = int(line_number[:-1])
         else:
@@ -63,9 +60,11 @@ def draw_picture(file_path, font=None):
             c = c.replace("sp", " ")
             try:
                 output += c[-1] * int(c[:-1])
-            except IndexError as e:
-                print(c)
-                raise e
+            except (IndexError, ValueError) as e:
+                error_string = f'''Error parsing picture file "{file_path}"
+    Line: {l}
+    Character: "{c}"'''
+                raise SystemExit(error_string)
 
         # Draw text
         draw_line(draw, line_number, output, font)
