@@ -6,7 +6,7 @@ import click
 from PIL import Image, ImageFont, ImageDraw
 
 
-CHAR_HEIGHT = 8
+CHAR_HEIGHT = 7
 CHAR_WIDTH = 4
 IMAGE_DIMENSIONS = (CHAR_WIDTH * 200, CHAR_HEIGHT * 200)
 
@@ -83,24 +83,23 @@ def __generate_output_file_name(input_file_path, output_extension="png"):
 
 @click.command()
 @click.argument("picture_file", required=1)
-@click.option(
-    "-f",
-    "--font",
-    "font_file",
-    default="./fonts/ctrld-fixed-16b.pil",
-    help="Path to PIL font file.",
-)
+@click.option("-f", "--font", "font_file", default=None, help="Path to PIL font file.")
 @click.option("-o", "--output", "output_file", help="Path to output file.")
 @click.option("-H", "--char-height", default=CHAR_HEIGHT, help="Height of characters.")
 def generate_picture(
-    picture_file, font_file, output_file=None, char_height=CHAR_HEIGHT
+    picture_file, font_file=None, output_file=None, char_height=CHAR_HEIGHT
 ):
 
     # Generate an output file name if one isn't provided
     if output_file == None:
         output_file = __generate_output_file_name(picture_file)
 
-    font = ImageFont.load_path(font_file)
+    # Load font file or set to None
+    try:
+        font = ImageFont.load_path(font_file)
+    except AttributeError as e:
+        font = None
+
     img = __draw_picture(picture_file, font, char_height=char_height)
     img.save(output_file)
 
