@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import os
+
+import click
 from PIL import Image, ImageFont, ImageDraw
 
 
@@ -12,7 +15,7 @@ CHAR_WIDTH = 4
 IMAGE_DIMENSIONS = (CHAR_WIDTH * 200, CHAR_HEIGHT * 200)
 
 
-def draw_line(
+def __draw_line(
     draw,
     line_number,
     text,
@@ -29,7 +32,7 @@ def draw_line(
     )
 
 
-def draw_picture(file_path, font=None):
+def __draw_picture(file_path, font=None):
     # Get data from picture file
     with open(file_path) as f:
         data = f.read()
@@ -67,12 +70,44 @@ def draw_picture(file_path, font=None):
                 raise SystemExit(error_string)
 
         # Draw text
-        draw_line(draw, line_number, output, font)
+        __draw_line(draw, line_number, output, font)
 
     return img
 
 
+def __generate_output_file_name(input_file_path, output_extension="png"):
+    """
+    Creates a file name based upon the input file's name.
+    """
+
+    # Remove the path
+    base = os.path.basename(input_file_path)
+    # Remove the file extension
+    file_name = os.path.splitext(base)[0]
+
+    return f"{file_name}.{output_extension}"
+
+
+@click.command()
+@click.argument("picture_file", required=1)
+@click.option(
+    "-f",
+    "--font",
+    "font_file",
+    default="./fonts/ctrld-fixed-16b.pil",
+    help="Path to PIL font file.",
+)
+@click.option("-o", "--output", "output_file", help="Path to output file.")
+def generate_picture(picture_file, font_file, output_file=None):
+
+    # Generate an output file name if one isn't provided
+    if output_file == None:
+        output_file = __generate_output_file_name(picture_file)
+
+    font = ImageFont.load_path(font_file)
+    img = __draw_picture(picture_file, font)
+    img.save(output_file)
+
+
 if __name__ == "__main__":
-    font = ImageFont.load_path("./fonts/ctrld-fixed-16b.pil")
-    img = draw_picture("./pictures/test.txt", font)
-    img.save("test.png")
+    generate_picture()
