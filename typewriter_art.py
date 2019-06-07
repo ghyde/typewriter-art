@@ -25,7 +25,9 @@ def __draw_line(
     )
 
 
-def __draw_picture(file_path, font=None, background_color=(255, 255, 255), **kwargs):
+def __draw_picture(
+    file_path, background_color=(255, 255, 255), font_file=None, **kwargs
+):
     # Get data from picture file
     with open(file_path) as f:
         data = f.read()
@@ -33,6 +35,12 @@ def __draw_picture(file_path, font=None, background_color=(255, 255, 255), **kwa
     # Create image object
     img = Image.new("RGBA", IMAGE_DIMENSIONS, background_color)
     draw = ImageDraw.Draw(img)
+
+    # Load font file or set to None
+    try:
+        font = ImageFont.load_path(font_file)
+    except AttributeError as e:
+        font = None
 
     for l in data.split("\n"):
         # Ignore empty lines or comments
@@ -86,21 +94,13 @@ def __generate_output_file_name(input_file_path, output_extension="png"):
 @click.option("-f", "--font", "font_file", default=None, help="Path to PIL font file.")
 @click.option("-o", "--output", "output_file", help="Path to output file.")
 @click.option("-H", "--char-height", default=CHAR_HEIGHT, help="Height of characters.")
-def generate_picture(
-    picture_file, font_file=None, output_file=None, char_height=CHAR_HEIGHT
-):
+def generate_picture(picture_file, output_file=None, **kwargs):
 
     # Generate an output file name if one isn't provided
     if output_file == None:
         output_file = __generate_output_file_name(picture_file)
 
-    # Load font file or set to None
-    try:
-        font = ImageFont.load_path(font_file)
-    except AttributeError as e:
-        font = None
-
-    img = __draw_picture(picture_file, font, char_height=char_height)
+    img = __draw_picture(picture_file, **kwargs)
     img.save(output_file)
 
 
