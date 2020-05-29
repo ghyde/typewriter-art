@@ -113,4 +113,4 @@ def generate_picture(picture_file, output_file=None, **kwargs):
 
 
 if __name__ == "__main__":
-    generate_picture()
+    generate_picture()  # pylint: disable=no-value-for-parameter
